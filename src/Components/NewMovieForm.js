@@ -23,49 +23,60 @@ class NewMovieForm extends Component {
             <Mutation mutation={newMovieMutation}>
                 {
                     (addMovie, { loading, error, data }) => (
-                        <div>
-                            <form onSubmit={ e => {
-                                e.preventDefault();
-                                addMovie({
-                                    variables: {
-                                        title: this.state.title,
-                                        description: this.state.description,
-                                        year: parseInt(this.state.year),
-                                        directorId: this.state.director
-                                    },
-                                    refetchQueries: [{ query: getMoviesQuery }]
-                                });
-                                } }>
-                                <label>Title</label>
-                                <input name="title" onChange={this.onChange} placeholder="Title" type="text"/>
-                                <br/>
-                                <label>Description</label>
-                                <textarea name="description" onChange={this.onChange} placeholder="Description" id="" cols="30" rows="10"></textarea>
-                                <br/>
-                                <label>Year</label>
-                                <input name="year" maxLength="4" onChange={this.onChange} placeholder="Year" type="number"/>
-                                <br/>
-                                <select name="director" onChange={this.onChange}>
-                                    <option key={null} value="null">Choose Director</option>
-                                    <Query query={getDirectorsQuery}>
-                                        {
-                                            ({ loading, error, data }) => {
-                                                if (loading) return <option disabled>Loading...</option>
-                                                if (error) return <option disabled>Error!</option>
+                        <div className="container" data-state="New Movie">
+                            <div className="device" data-view="list">
+                                <form onSubmit={ e => {
+                                    e.preventDefault();
+                                    this.setState({
+                                        title: "",
+                                        description: "",
+                                        year: "",
+                                        directorId: ""
+                                    });
+                                    addMovie({
+                                        variables: {
+                                            title: this.state.title,
+                                            description: this.state.description,
+                                            year: parseInt(this.state.year),
+                                            directorId: this.state.director
+                                        },
+                                        refetchQueries: [{ query: getMoviesQuery }]
+                                    });
+                                    } }>
+                                    <div>
+                                        <input name="title" onChange={this.onChange} placeholder="Title" type="text"/>
+                                    </div>
+                                    <div>
+                                        <textarea name="description" onChange={this.onChange} placeholder="Description" id="" cols="30" rows="10"></textarea>
+                                    </div>
+                                    <div>
+                                        <input name="year" maxLength="4" onChange={this.onChange} placeholder="Year" type="number"/>
+                                    </div>
+                                    <div>
+                                        <select name="director" onChange={this.onChange}>
+                                            <option key={null} value="null">Choose Director</option>
+                                            <Query query={getDirectorsQuery}>
+                                                {
+                                                    ({ loading, error, data }) => {
+                                                        if (loading) return <option disabled>Loading...</option>
+                                                        if (error) return <option disabled>Error!</option>
 
-                                                return data.directors.map(({ id, name }) => (
-                                                    <option key={id} value={id}>{name}</option>
-                                                ));
-                                            }
-                                        }
-                                    </Query>
-                                </select>
-                                <br/>
-                                <button type="submit">Add</button>
-                            </form>
+                                                        return data.directors.map(({ id, name }) => (
+                                                            <option key={id} value={id}>{name}</option>
+                                                        ));
+                                                    }
+                                                }
+                                            </Query>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <button type="submit">Add</button>
+                                    </div>
+                                </form>
 
-                            { loading && <div>Loading...</div> }
-                            { error && <div>Error!</div> }
+                                { loading && <div>Loading...</div> }
+                                { error && <div>Error!</div> }
+                            </div>
                         </div>
                     )
                 }
