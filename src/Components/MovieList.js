@@ -1,37 +1,76 @@
 import React, { Component } from 'react';
 
 import { Query } from 'react-apollo';
-import { getMoviesQuery } from '../Queries/Queries';
+import { getMoviesQuery, getMovieQuery } from '../Queries/Queries';
 import { Button, Modal } from 'antd';
 import 'antd/dist/antd.css';
+import { flattenSelections } from 'apollo-utilities';
+import NewMovieForm from './NewMovieForm';
 
 class MovieList extends Component {
     state = { 
-        visible: false
+        visible: false,
+        id: null
     }
 
     showModal = id => {
         this.setState({
             visible: true,
+            id
         });
     }
 
     handleOk = (e) => {
         this.setState({
-        visible: false,
+            visible: false,
+        });
+    }
+
+    handleCancel = (e) => {
+        this.setState({
+            visible: false
         });
     }
     render() {
         return (
             <div className="container" data-state="Movie App">
                 <Modal
-                title="Basic Modal"
+                title="Movie Details"
                 visible={this.state.visible}
                 onOk={this.handleOk}
+                onCancel={this.handleCancel}
+                footer={
+                    <Button type="primary" onClick={this.handleOk}>Kapat</Button>
+                }
                 >
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
+                <div>
+                    <Query query={getMovieQuery} variables={{ id: this.state.id }}>
+                        {({ loading, error, data }) => {
+                            if (loading) return <div>Loading...</div>
+                            if (error) return <div>Error!</div>
+                            console.log(data.movie);
+                            return (
+                                <div>
+                                    <h2>{data.movie.title}</h2>
+                                    <p>{data.movie.year}</p>
+                                    <p>{data.movie.description}</p>
+                                    <br/>
+                                    <h3>{data.movie.director.name}</h3>
+                                    {
+                                        data.movie.director.movies.map((movie) => (
+                                            <ul className="director-list">
+                                                <li className="content">
+                                                    <div className="bg"></div>
+                                                    <div className="title">{movie.title}</div>
+                                                </li>
+                                            </ul>
+                                        ))
+                                    }
+                                </div>
+                                )
+                        }}
+                    </Query>
+                </div>
                 </Modal>
                 <div className="device" data-view="list">
                     <ul className="layer" data-view="list">

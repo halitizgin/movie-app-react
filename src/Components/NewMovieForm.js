@@ -2,13 +2,16 @@ import React, { Component } from 'react';
 
 import { Query, Mutation } from 'react-apollo';
 import { getDirectorsQuery, getMoviesQuery, newMovieMutation } from '../Queries/Queries';
+import { Button, message } from 'antd';
+import 'antd/dist/antd.css';
 
 class NewMovieForm extends Component {
     state = {
         title: '',
         description: '',
         year: null,
-        director: null
+        director: null,
+        loading: false
     }
 
     onChange = (e) =>
@@ -20,12 +23,19 @@ class NewMovieForm extends Component {
 
     render() {
         return (
-            <Mutation mutation={newMovieMutation}>
+            <Mutation mutation={newMovieMutation} onCompleted={() => {
+                this.formRef.reset();
+                message.success('Movie added!');
+                }}>
                 {
                     (addMovie, { loading, error, data }) => (
                         <div className="container" data-state="New Movie">
                             <div className="device" data-view="list">
-                                <form onSubmit={ e => {
+                                <form 
+                                ref={el => {
+                                    this.formRef = el;
+                                }}
+                                onSubmit={ e => {
                                     e.preventDefault();
                                     this.setState({
                                         title: "",
@@ -70,13 +80,11 @@ class NewMovieForm extends Component {
                                         </select>
                                     </div>
                                     <div>
-                                        <button type="submit">Add</button>
+                                         <Button type="primary" htmlType="submit" loading={loading}>Add</Button>
                                     </div>
                                 </form>
-
-                                { loading && <div>Loading...</div> }
-                                { error && <div>Error!</div> }
                             </div>
+                            { error && <div>Error!</div> }
                         </div>
                     )
                 }
